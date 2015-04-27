@@ -34,10 +34,10 @@ if(pythonBindings)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
 
   
-  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
+  install(TARGETS _likelihood DESTINATION ${PYTHON_PKG_DIR}/dcprogs/likelihood)
   install(FILES  random.py _methods.py optimization.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
-          DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
+        DESTINATION ${PYTHON_PKG_DIR}/dcprogs/likelihood)
 endif(pythonBindings)
 
 if(pythonBindings AND tests)

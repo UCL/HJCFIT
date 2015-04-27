@@ -17,7 +17,7 @@
 
 if(pythonBindings)
 
-  install(FILES  __init__.py DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
+  install(FILES  __init__.py DESTINATION ${PYTHON_PKG_DIR}/dcprogs)
 
 endif(pythonBindings)
 

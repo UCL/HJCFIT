@@ -17,7 +17,7 @@
 
 if(pythonBindings)
 
-  install(FILES CH82.scn CCO.scn CO.scn DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/data)
+    install(FILES CH82.scn CCO.scn CO.scn DESTINATION ${PYTHON_PKG_DIR}/dcprogs/data)
 
 endif(pythonBindings)
 
