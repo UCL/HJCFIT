@@ -38,11 +38,6 @@ if(TARGET eigen)
     add_dependencies(likelihood eigen)
 endif()
 
-if(WIN32)
-  set(LIB_DIRECTORY dcprogs/DLLs)
-else()
-  set(LIB_DIRECTORY lib)
-endif(WIN32)
 install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
 install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood) 
 
