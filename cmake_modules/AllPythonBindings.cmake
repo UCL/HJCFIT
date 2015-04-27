@@ -1,31 +1,7 @@
 # Python bindings are a bit messy, so done here rather than main file.
-
-find_package(PythonLibs REQUIRED)
-find_package(PythonInterp REQUIRED)
-
-if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
-  execute_process( 
-    COMMAND ${PYTHON_EXECUTABLE} -c "import sys; print(\"%i.%i\" % sys.version_info[:2])"
-    OUTPUT_VARIABLE PYTHON_VERSION
-  )
-  if( PYTHON_VERSION )
-    string (STRIP ${PYTHON_VERSION} PYTHON_VERSION)
-    set(PYTHON_VERSION ${PYTHON_VERSION} CACHE STRING "Version of the Python interpreter.")
-    mark_as_advanced(PYTHON_VERSION)
-    MESSAGE(STATUS "[Python] Version: ${PYTHON_VERSION}")
-  else( PYTHON_VERSION )
-    MESSAGE(STATUS "Could not determine python version.")
-  endif( PYTHON_VERSION )
-endif(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
-
+find_package(CoherentPython REQUIRED)
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-
-execute_process(
-  COMMAND ${PYTHON_EXECUTABLE} -c
-    "from sys import version_info; print(version_info.major==3)"
-  OUTPUT_VARIABLE PYTHON_VERSION_MAJOR
-)
 
 if(NOT DEFINED PYTHON_PKG_DIR)
   execute_process( 
