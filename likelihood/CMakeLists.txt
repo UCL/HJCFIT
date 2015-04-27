@@ -34,7 +34,9 @@ endif(MSVC)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
-add_dependencies(likelihood eigen)
+if(TARGET eigen)
+    add_dependencies(likelihood eigen)
+endif()
 
 if(WIN32)
   set(LIB_DIRECTORY dcprogs/DLLs)
