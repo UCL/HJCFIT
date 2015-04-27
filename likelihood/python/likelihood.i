@@ -19,7 +19,8 @@
 ************************/
 
 // Starts the likelihood sub-package
-%module(package="dcprogs") likelihood
+%module(package="dcprogs", threads="4") likelihood
+%nothread;
 // C++ definitions that are needed to compile the python bindings.
 %{
 #define SWIG_FILE_WITH_INIT
@@ -27,6 +28,10 @@
 #  include <iostream>
 #  include <sstream>
 #  include <memory>
+
+#  ifdef OPENMP_FOUND
+#    include <omp.h>
+#  endif
 
 #  if NUMPY_VERSION_MINOR >= 7 
 #    define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -147,8 +152,28 @@ namespace DCProgs {
   %include "approx_survivor.swg"
   %include "missed_eventsG.swg"
   %include "log10likelihood.swg"
-
 }
+
+  %thread;
+  %inline %{
+     int get_nthreads() {
+#      ifdef OPENMP_FOUND
+         int nthreads = 0;
+#        pragma omp parallel reduction(+:nthreads)
+         { nthreads = 1; }
+         return nthreads;
+#      else
+         return 0;
+#      endif
+     }
+     int set_nthreads(int i) {
+#      ifdef OPENMP_FOUND
+         omp_set_num_threads(i);
+#      endif
+       return get_nthreads();
+     }
+  %}
+  %nothread;
 %include "brentq.swg"
 %include "time_filter.swg"
 %include "chained.swg"

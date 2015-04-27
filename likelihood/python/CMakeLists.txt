@@ -21,10 +21,14 @@ if(pythonBindings)
 
   set_source_files_properties(likelihood.i PROPERTIES CPLUSPLUS ON)
   if(PYTHON_VERSION VERSION_LESS "3.0.0")
-    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
+    set(SWIG_FLAGS "-includeall" )
   else()
-    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall;-py3" )
+    set(SWIG_FLAGS "-includeall;-py3" )
   endif(PYTHON_VERSION VERSION_LESS "3.0.0")
+  if(OPENMP_FOUND)
+      set(SWIG_FLAGS "${SWIG_FLAGS};-threads")
+  endif()
+  set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "${SWIG_FLAGS}" )
   set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg chained.swg time_filter.swg
@@ -34,10 +38,10 @@ if(pythonBindings)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
 
   
-  install(TARGETS _likelihood DESTINATION ${PYTHON_PKG_DIR}/dcprogs/likelihood)
+  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
   install(FILES  random.py _methods.py optimization.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
-        DESTINATION ${PYTHON_PKG_DIR}/dcprogs/likelihood)
+          DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
 endif(pythonBindings)
 
 if(pythonBindings AND tests)

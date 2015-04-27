@@ -3,9 +3,7 @@ find_package(CoherentPython REQUIRED)
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
-if(WIN32 AND NOT DEFINED PYTHON_PKG_DIR)
-  set(PYTHON_PKG_DIR dcprogs/python-pkg)
-elseif(NOT DEFINED PYTHON_PKG_DIR)
+if(NOT DEFINED PYTHON_PKG_DIR)
   execute_process( 
     COMMAND ${PYTHON_EXECUTABLE} -c 
               "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
@@ -16,7 +14,7 @@ elseif(NOT DEFINED PYTHON_PKG_DIR)
     set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH "Main python package repository.")
     mark_as_advanced(PYTHON_PKG_DIR)
   endif(PYTHON_PKG_DIR)
-endif()
+endif(NOT DEFINED PYTHON_PKG_DIR)
 
 # There is an issue on Windows where pyconfig.h defines a macro hypot that screws up swig+c++11
 # Test for issue and add -include cmath otherwise
@@ -109,6 +107,18 @@ if(tests)
 endif(tests)
 
 
+
+if(WIN32)
+  set(PYINSTALL_DIRECTORY dcprogs/python-pkg)
+else()
+  execute_process( 
+    COMMAND ${PYTHON_EXECUTABLE} -c 
+    "from sys import version_info; print(\"%i.%i\" %(version_info.major, version_info.minor))"
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE PYTHON_VERSION
+  )
+  set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
+endif(WIN32)
 
 if(NOT PYTHON_VERSION VERSION_LESS "3.0.0")
   set(DCPROGS_PYTHON3 TRUE)

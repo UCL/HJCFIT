@@ -335,8 +335,10 @@ class Log10Likelihood {
         return $self->operator()(DCProgs::numpy::map_to_rmatrix(_Q));
       }
     }
+    %thread;
     //! Computes likelihood for each burst in separate value.
     DCProgs::t_rvector vector(QMatrix const &_Q) const;
     //! Log-likelihood 
     DCProgs::t_real operator()(QMatrix const &_Q) const;
+    %nothread;
 };
