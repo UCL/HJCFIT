@@ -118,7 +118,7 @@ namespace DCProgs {
 
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
     t_real result(0);
-#   pragma parallel for shared(bursts, eG, _matrix, initial, final) reduction(+:result)
+#   pragma omp parallel for shared(_matrix, final) reduction(+:result)
     for(size_t i=0; i < bursts.size(); ++i)
       if(bursts[i].size() >= 1)
           result += one_burst(eG, bursts[i], _matrix.nshut(), initial, final);
@@ -139,7 +139,6 @@ namespace DCProgs {
 
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
     t_rvector result = t_rvector::Ones(bursts.size());
-#   pragma parallel for shared(bursts, eG, _matrix, initial, final, result)
     for(size_t i=0; i < bursts.size(); ++i)
       if(bursts[i].size() >= 1)
           result(i) = one_burst(eG, bursts[i], _matrix.nshut(), initial, final);
