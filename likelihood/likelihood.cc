@@ -67,40 +67,10 @@ namespace DCProgs {
   }
 
   namespace {
-    t_real one_burst(
+    inline t_real one_burst(
             MissedEventsG const &_eG, t_Burst const &_burst,
             size_t _nshut, t_initvec const &_initial, t_rvector const &_final) {
-#     ifdef OPENMP___FOUND
-        if(_burst.size() % 2 != 1)
-          throw errors::Domain("Expected a burst with odd number of intervals");
-
-        t_initvec allvec = t_initvec::Zero(_nshut);
-        t_real coeff = 0;
-#       pragma omp parallel shared(allvec) reduction(+:coeff)
-        {
-          size_t const nthreads = omp_get_num_threads();
-          size_t const id = omp_get_thread_num();
-          size_t const N = (_burst.size() - 1) >> 1;
-          size_t const leftover = N % nthreads;
-          size_t const addsome = id < leftover ? (std::min(id, leftover) << 1): 0;
-          size_t const per_thread = (N / nthreads) << 1;
-          size_t const first = 1 + per_thread * id + addsome;
-          size_t const end = first + per_thread * (id+1) + size_t(id < leftover ? 2: 0);
-          auto partial =
-              chained_log10_likelihood(_eG, _burst.begin() + first, _burst.begin() + end);
-          if(id == 0) allvec = _initial * _eG.af(static_cast<t_real>(_burst.front()));
-
-          coeff = partial.second;
-#         pragma omp for ordered
-          for(size_t i = 0; i < nthreads; ++i) {
-#           pragma omp order
-            allvec = allvec * partial.first;
-          }
-        }
-        return std::log10(allvec * _final) + coeff;
-#     else
-        return chained_log10_likelihood(_eG, _burst.begin(), _burst.end(), _initial, _final);
-#     endif
+      return chained_log10_likelihood(_eG, _burst.begin(), _burst.end(), _initial, _final);
     }
   }
 
@@ -139,6 +109,7 @@ namespace DCProgs {
 
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
     t_rvector result = t_rvector::Ones(bursts.size());
+#   pragma omp parallel for shared(_matrix, final, result)
     for(size_t i=0; i < bursts.size(); ++i)
       if(bursts[i].size() >= 1)
           result(i) = one_burst(eG, bursts[i], _matrix.nshut(), initial, final);
